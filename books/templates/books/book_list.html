@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+     <style>
+        table {
+            width: 70%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            font-family: Arial;
+        }
+        th, td {
+            border: 1px solid #aaa;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>Book List</h2>
+    <h3 style="text-align:center;"><a href="{% url 'book_create' %}">ADD BOOK</a>||<a href="{% url 'author_create' %}">ADD AUTHOR</a></h3>
+    <form method="get" style="text-align:center;">
+        <input type="text" name="q" placeholder="Search">
+        <button type="submit">Filter</button>
+        <a href="{% url 'book_list' %}">CLEAR</a>
+    </form>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Author</th>
+            <th>Published Date</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>
+                {% for category in book.categories.all %}
+                    <span>{{ category.name }}</span>{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    No Categories
+                {% endfor %}
+
+            </td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.published_date }}</td>
+            <td>₹{{ book.price }}</td>
+            <td><a href="{% url 'book_update' book.pk%}">UPDATE</a>||<a href="{% url 'book_delete' book.pk%}">DELETE</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6"> No Books Available </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div style="text-align:center;">
+        {% if is_paginated %}
+            {% if page_obj.has_previous %}
+                <a href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }} ">Previous</a>
+            {% endif %}
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            {% if page_obj.has_next %}
+                <a href="?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}">Next</a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <h4 style="text-align:center;"><a href="{% url 'logout' %}">logout</a></h4>
+
+</body>
+</html>
