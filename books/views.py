@@ -42,7 +42,7 @@ class Booklistview(ListView):
     template_name = 'books/book_list.html'
     context_object_name = 'books'
     ordering = ['title']
-    paginate_by = 5
+    paginate_by = 6
 
     def get_queryset(self):
         query = self.request.GET.get('q', '')
