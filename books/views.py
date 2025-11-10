@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.db.models import Count,Q
-from .models import Book,Author
+from .models import Book,Author,Category
 from django.views.generic import CreateView,UpdateView,DeleteView,ListView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
@@ -8,6 +8,11 @@ from .forms import BookForm
 from django.contrib.auth import login,authenticate,logout
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+
+#DRF IMPORTS -----
+from rest_framework import viewsets
+from .serializers import CategorySerializer,BookSerializer,AuthorSerializer
+
 
 # Create your views here.
 
@@ -89,3 +94,17 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+# DRF API views
+class AuthorViewSet(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+class BookViewSet(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
