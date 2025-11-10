@@ -1,6 +1,12 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 from .views import Bookcreateview,Bookdeleteview,Bookupdateview,Booklistview,AuthorCreateView
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'authors',views.AuthorViewSet)
+router.register(r'books',views.BookViewSet)
+router.register(r'categories',views.CategoryViewSet)
 
 urlpatterns = [
     path('',Booklistview.as_view(), name="book_list"),
@@ -11,4 +17,7 @@ urlpatterns = [
     path('<int:pk>/delete/',Bookdeleteview.as_view(),name="book_delete"),
     path('login/', views.login_view, name="login"),
     path('logout/',views.logout_view, name="logout"),
+
+    #api routes
+    path('api/',include(router.urls)),
 ]
