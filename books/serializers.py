@@ -9,15 +9,41 @@ class CategorySerializer(serializers.ModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = '__all__'
+        fields = ['id','name','bio']
 
 class BookSerializer(serializers.ModelSerializer):
-    categories = serializers.PrimaryKeyRelatedField(
-        many = True,
-        queryset = Category.objects.all()
+    categories = CategorySerializer(
+        many=True,read_only=True
     )
-    author = serializers.PrimaryKeyRelatedField(queryset = Author.objects.all())
+    category_ids = serializers.PrimaryKeyRelatedField(
+        many=True, queryset = Category.objects.all(), write_only = True
+    )
+    author = AuthorSerializer(read_only=True)
+    author_id = serializers.PrimaryKeyRelatedField(
+        queryset = Author.objects.all(), write_only =True
+    )
     class Meta:
         model = Book
-        fields = '__all__'
-        
+        fields = [
+            'id','title','categories','category_ids',
+            'author','author_id','published_date','price'
+        ]
+
+    def create(self, validated_data):
+        category_ids = validated_data.pop('category_ids', [])
+        author = validated_data.pop('author_id')
+        book = Book.objects.create(author = author, **validated_data)
+        book.categories.set(category_ids)
+        return book
+    
+    def update(self, instance, validated_data):
+        category_ids = validated_data.pop('category_ids', [])
+        author = validated_data.pop('author_id')
+        for attr, value in validated_data.items():
+            setattr(instance,attr,value)
+        if author:
+            instance.author = author
+        instance.save()
+        if category_ids is not None:
+            instance.categories.set(category_ids)
+        return instance
