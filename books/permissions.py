@@ -4,7 +4,7 @@ class IsAuthorOrReadOnly(BasePermission):
     """
     Custom permission:
     - Anyone can read (GET)
-    - Only the author of the book can update/delete
+    - Only the author of the book can update/delete 
     """
 
     def has_object_permission(self, request, view, obj):
