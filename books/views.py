@@ -12,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 #DRF IMPORTS -----
 from rest_framework import viewsets
 from .serializers import CategorySerializer,BookSerializer,AuthorSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAdminUser,IsAuthenticated
+from .permissions import IsAuthorOrReadOnly
 
 
 # Create your views here.
@@ -104,6 +106,26 @@ class AuthorViewSet(viewsets.ModelViewSet):
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    # we applied permissions to whole BookViewSet
+    # there are no custom permissions here
+    #permission_classes = [IsAuthenticatedOrReadOnly]  # everyone can view only authenticated users can upadate and delete
+
+    # ---------------------------------------
+
+    # we applied custom permissions here
+    # we override get_permissions()
+    # def get_permissions(self):
+    #     if self.action in ['update', 'partial_update', 'destroy']:
+    #         return [IsAdminUser()]      # only admins can put/patch/delete
+    #     elif self.action in ['create']:
+    #         return [IsAuthenticated()]      # all logged in users can create/POST
+    #     return [IsAuthenticatedOrReadOnly()]      # everyone can GET/view
+    
+    # ---------------------------------------
+
+    # CUSTOM PERMISSION CLASSES
+    permission_classes = [IsAuthorOrReadOnly]
+        
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
